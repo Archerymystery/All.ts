@@ -11,5 +11,11 @@
   },
   "keywords": [],
   "author": "",
-  "license": "ISC"
+  "license": "ISC",
+  "dependencies": {
+    "@types/node": "^20.8.0",
+    "dotenv": "^16.3.1",
+    "telegraf": "^4.14.0",
+    "typescript": "^5.2.2"
+  }
 }
