@@ -1,6 +1,7 @@
 import { Telegraf } from "telegraf"
 import { Hendler } from "./Handlers/Hendler"
 import dotenv from "dotenv"
+import { Start } from "./Handlers/Commands/Start"
 dotenv.config()
 class Bot {
   bot: Telegraf
@@ -11,7 +12,7 @@ class Bot {
   }
 
   init() {
-    this.hendlers = []
+    this.hendlers = [new Start(this.bot)]
     for (const hendler of this.hendlers) {
       hendler.handler()
     }
