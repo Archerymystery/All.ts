@@ -1,13 +1,22 @@
 import { Telegraf } from "telegraf";
-import { Hendler } from "../Hendler";
+import { Handler } from "../Handler";
 
-export class Text extends Hendler {
+export class Text extends Handler {
   constructor(bot: Telegraf) {
     super(bot)
   }
-  handler(): void {
-    this.bot.on('text', (ctx) => {
-      ctx.reply(ctx.message.text)
+  tiktok_dounloder(videoUrl: string): void {
+    fetch("", { method: "GET" }).then(response => {
+
+    }).catch((err) => {
+
     })
+  }
+  handler(): void {
+    console.log("Text")
+    this.bot.on('text', (ctx) => {
+
+    })
+
   }
 }

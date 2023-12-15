@@ -1,6 +1,6 @@
 import { Telegraf } from "telegraf";
 
-export abstract class Hendler {
+export abstract class Handler {
   protected bot: Telegraf
   constructor(bot: Telegraf) {
     this.bot = bot;
