@@ -1,7 +1,7 @@
 import { Telegraf } from "telegraf";
 import { Handler } from "../Handler";
 
-export class Start extends Handler {
+export default class Start extends Handler {
   constructor(bot: Telegraf) {
     super(bot);
   }

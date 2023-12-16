@@ -1,7 +1,9 @@
 import { Telegraf } from "telegraf"
 import fs from "fs/promises"
 import path from "path";
-import { Start } from "./Handlers/Commands/Start";
+import * as dotenv from "dotenv";
+dotenv.config();
+import { env } from "./env";
 
 async function addHandlers(modulePath: string, bot: Telegraf) {
   const files = await fs.readdir(modulePath);
@@ -12,9 +14,11 @@ async function addHandlers(modulePath: string, bot: Telegraf) {
       await addHandlers(fullPath, bot);
     } else if (file.endsWith('.ts') && !file.endsWith('Handler.ts')) {
       const moduleImport = await import(fullPath);
-      const module = moduleImport
-      if (module.handler && typeof module.handler === 'function') {
-        module.handler()
+      const module = moduleImport.default
+      if (module) {
+        console.log(1)
+        const moduleFunc = new module(bot)
+        moduleFunc.handler()
       }
     }
   }
@@ -35,9 +39,8 @@ class Bot {
     this.bot.launch()
   }
 }
-//if (!process.env.TOKEN) {
-// throw new Error("")
 
-//}
-const bot = new Bot("5723902855:AAEurpRxqMTQ-LPWART-lkQIVqGl4vauUBE")
+
+
+const bot = new Bot(env.TOKEN)
 bot.init()
