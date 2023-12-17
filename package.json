@@ -13,11 +13,15 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@tobyg74/tiktok-api-dl": "^1.0.13",
     "@types/node": "^20.10.4",
     "dotenv": "^16.3.1",
     "punycode": "^2.3.1",
     "telegraf": "^4.15.3",
     "typescript": "^5.3.3",
     "zod": "^3.22.4"
+  },
+  "devDependencies": {
+    "@telegraf/types": "^6.9.1"
   }
 }

@@ -7,7 +7,6 @@ import { env } from "./env";
 
 async function addHandlers(modulePath: string, bot: Telegraf) {
   const files = await fs.readdir(modulePath);
-  console.log(files)
   for (const file of files) {
     const fullPath = path.join(modulePath, file);
     if ((await fs.stat(fullPath)).isDirectory()) {
@@ -16,7 +15,6 @@ async function addHandlers(modulePath: string, bot: Telegraf) {
       const moduleImport = await import(fullPath);
       const module = moduleImport.default
       if (module) {
-        console.log(1)
         const moduleFunc = new module(bot)
         moduleFunc.handler()
       }
