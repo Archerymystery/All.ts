@@ -19,11 +19,11 @@ export default class Text extends Handler {
         Markup.button.callback("Download", `music:${ctx.message.text}`)
       ]);
       if (musicalResult.status === "error") {
-        ctx.reply("This video is private or remove")
+        ctx.reply("This video is private or remove📥")
       }
       if (result.result?.type === "video" && musicalResult.result?.video1) {
         ctx.replyWithVideo({ url: musicalResult.result?.video1 }).then(() => {
-          ctx.reply("Music", kayBoard)
+          ctx.reply("Music🎵", kayBoard)
         });;
       } else if (result.result?.type === "image") {
         const groop: InputMediaPhoto[] = []
@@ -31,7 +31,7 @@ export default class Text extends Handler {
           groop.push({ type: "photo", media: { url: item } })
         });
         ctx.replyWithMediaGroup(groop, {}).then(() => {
-          ctx.reply("Music", kayBoard)
+          ctx.reply("Music🎵", kayBoard)
         })
 
       }
