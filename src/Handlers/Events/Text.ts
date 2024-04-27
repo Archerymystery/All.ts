@@ -13,7 +13,6 @@ export default class Text extends Handler {
       version: "v3"
 
     }).then((result) => {
-<<<<<<< HEAD
       const MusicalDownAPI = result as MusicalDownResponse;
       if (MusicalDownAPI.status === "error") {
         ctx.reply("This video is private or remove")
@@ -47,32 +46,11 @@ export default class Text extends Handler {
             }
           });
       } else if (result.result?.type === "image" && MusicalDownAPI.result?.images) {
-=======
-      const musicalResult = result as MusicalDownResponse;
-      const kayBoard = Markup.inlineKeyboard([
-        Markup.button.callback("Download", `music:${ctx.message.text}`)
-      ]);
-      if (musicalResult.status === "error") {
-        ctx.reply("This video is private or remove📥")
-      }
-      if (result.result?.type === "video" && musicalResult.result?.video1) {
-        ctx.replyWithVideo({ url: musicalResult.result?.video1 }).then(() => {
-          ctx.reply("Music🎵", kayBoard)
-        });;
-      } else if (result.result?.type === "image") {
->>>>>>> refs/remotes/origin/main
         const groop: InputMediaPhoto[] = []
 
         MusicalDownAPI.result?.images.forEach((item) => {
           groop.push({ type: "photo", media: { url: item } })
         });
-<<<<<<< HEAD
-=======
-        ctx.replyWithMediaGroup(groop, {}).then(() => {
-          ctx.reply("Music🎵", kayBoard)
-        })
->>>>>>> refs/remotes/origin/main
-
         ctx.replyWithMediaGroup(groop, {}).then(() => {
           if (MusicalDownAPI.result?.music && MusicalDownAPI.result.music) {
             ctx.replyWithAudio(
