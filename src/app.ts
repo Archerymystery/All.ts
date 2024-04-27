@@ -1,4 +1,5 @@
 import { Telegraf } from "telegraf"
+import logger from "./logger";
 import fs from "fs/promises"
 import path from "path";
 import * as dotenv from "dotenv";
@@ -33,7 +34,7 @@ class Bot {
   init() {
     const handlerPath = path.join(__dirname, "Handlers")
     addHandlers(handlerPath, this.bot)
-    console.log("start")
+    logger.info("Starting Bot")
     this.bot.launch()
   }
 }
