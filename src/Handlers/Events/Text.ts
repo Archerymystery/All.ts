@@ -1,61 +1,67 @@
 import { Context, Telegraf } from "telegraf";
 import { Handler } from "../Handler";
-import { TiktokDL } from "@tobyg74/tiktok-api-dl"
+import { Downloader } from "@tobyg74/tiktok-api-dl"
 import type { Update, Message, InputMediaPhoto } from "telegraf/types";
-import { MusicalDownResponse } from "@tobyg74/tiktok-api-dl/lib/types/musicaldown";
+import { TiktokAPIResponse } from "@tobyg74/tiktok-api-dl/lib/types/downloader/tiktokApi";
 export default class Text extends Handler {
   constructor(bot: Telegraf) {
     super(bot)
   }
   sendTiktok(ctx: Context<Update.MessageUpdate<Message.TextMessage>>): void {
     const url = ctx.message.text
-    TiktokDL(url, {
-      version: "v3"
+    Downloader(url, {
+      version: "v1"
 
-    }).then((result) => {
-      const MusicalDownAPI = result as MusicalDownResponse;
-      if (MusicalDownAPI.status === "error") {
+    }).then((result: TiktokAPIResponse) => {
+      if (result.status === "error") {
         ctx.reply("This video is private or remove")
       }
       if (
-        MusicalDownAPI.result?.type === "video" &&
-        MusicalDownAPI.result.video1
+        result.result?.type === "video" &&
+        result.result.video?.playAddr[0]
       ) {
         ctx.sendVideo(
           {
-            url: MusicalDownAPI.result.video1,
+            url: result.result.video.playAddr[0],
           },
           {
             caption:
-              `${MusicalDownAPI.result.desc}\n[${MusicalDownAPI.result.author.nickname}](https://www.tiktok.com/@${MusicalDownAPI.result.author.nickname})`,
-            parse_mode: 'Markdown',
-            reply_markup: {
-              inline_keyboard: [
-                [{ text: "HD Video", callback_data: `tiktokHD:${url}` }]
-              ]
-            }
+              `${result.result.description}\n[${result.result.author.nickname}](https://www.tiktok.com/@${result.result.author.nickname})`,
+            parse_mode: 'Markdown'
           }).then(() => {
-            if (MusicalDownAPI.result?.music &&
-              MusicalDownAPI.result.music
-            ) {
+            if (result.result?.music) {
               ctx.replyWithAudio(
                 {
-                  url: MusicalDownAPI.result.music,
+                  url: result.result.music.playUrl[0],
+
+                },
+                {
+                  thumbnail: { url: result.result.music.coverThumb[0] },
+                  performer: result.result.music.author,
+                  title: result.result.music.title,
+                  duration: result.result.music.duration,
                 }
               )
             }
           });
-      } else if (result.result?.type === "image" && MusicalDownAPI.result?.images) {
+      } else if (result.result?.type === "image" && result.result?.images) {
         const groop: InputMediaPhoto[] = []
 
-        MusicalDownAPI.result?.images.forEach((item) => {
+        result.result?.images.forEach((item) => {
           groop.push({ type: "photo", media: { url: item } })
         });
         ctx.replyWithMediaGroup(groop, {}).then(() => {
-          if (MusicalDownAPI.result?.music && MusicalDownAPI.result.music) {
+          if (result.result?.music && result.result.music) {
             ctx.replyWithAudio(
               {
-                url: MusicalDownAPI.result.music
+                url: result.result.music.playUrl[0],
+
+              },
+              {
+                thumbnail: { url: result.result.music.coverThumb[0] },
+                performer: result.result.music.author,
+                title: result.result.music.title,
+                duration: result.result.music.duration,
               }
             )
           }
@@ -76,28 +82,5 @@ export default class Text extends Handler {
         this.sendTiktok(ctx)
       }
     })
-    this.bot.action(/^tiktokHD:(.*)$/, (ctx) => {
-      if (!ctx) return
-      TiktokDL(ctx.match[1], {
-        version: "v3"
-
-      }).then((result) => {
-        const MusicalDownAPI = result as MusicalDownResponse;
-        if (MusicalDownAPI.status === "error") {
-          ctx.reply("This video is private or remove")
-        }
-        if (
-          MusicalDownAPI.result?.type === "video" &&
-          MusicalDownAPI.result.video_hd
-        ) {
-          ctx.sendVideo(
-            {
-              url: MusicalDownAPI.result.video_hd,
-            },
-          )
-        }
-      });
-    });
-
   }
 }
