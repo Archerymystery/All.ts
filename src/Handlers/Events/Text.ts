@@ -3,18 +3,23 @@ import { Handler } from "../Handler";
 import { Downloader } from "@tobyg74/tiktok-api-dl"
 import type { Update, Message, InputMediaPhoto } from "telegraf/types";
 import { TiktokAPIResponse } from "@tobyg74/tiktok-api-dl/lib/types/downloader/tiktokApi";
+import logger from "../../logger";
 export default class Text extends Handler {
   constructor(bot: Telegraf) {
     super(bot)
   }
-  sendTiktok(ctx: Context<Update.MessageUpdate<Message.TextMessage>>): void {
-    const url = ctx.message.text
-    Downloader(url, {
+  sendTiktoks(ctx: Context<Update.MessageUpdate<Message.TextMessage>>, urls: string[]): void {
+    if (urls.length == 0) return
+    Downloader(urls[0], {
       version: "v1"
 
     }).then((result: TiktokAPIResponse) => {
+      logger.info(`Start sending tiktok: ${urls[0]} for user: @${ctx.message.from.username} chat id: ${ctx.message.chat.id}  `)
       if (result.status === "error") {
         ctx.reply("This video is private or remove")
+        urls.shift()
+        this.sendTiktoks(ctx, urls)
+
       }
       if (
         result.result?.type === "video" &&
@@ -41,7 +46,10 @@ export default class Text extends Handler {
                   title: result.result.music.title,
                   duration: result.result.music.duration,
                 }
-              )
+              ).then(() => {
+                urls.shift()
+                this.sendTiktoks(ctx, urls)
+              })
             }
           });
       } else if (result.result?.type === "image" && result.result?.images) {
@@ -63,7 +71,10 @@ export default class Text extends Handler {
                 title: result.result.music.title,
                 duration: result.result.music.duration,
               }
-            )
+            ).then(() => {
+              urls.shift()
+              this.sendTiktoks(ctx, urls)
+            })
           }
         })
       }
@@ -73,13 +84,10 @@ export default class Text extends Handler {
   handler(): void {
     console.log("Text")
     this.bot.on('text', async (ctx: Context<Update.MessageUpdate<Message.TextMessage>>) => {
-      console.log(ctx.message.text)
-      if (!ctx.message.text.startsWith("https://www.tiktok.com/@") &&
-        ctx.message.text.startsWith("https://www.tiktok.com/") ||
-        ctx.message.text.startsWith("https://vm.tiktok.com/") &&
-        !ctx.message.text.startsWith("https://vm.tiktok.com/@")
-      ) {
-        this.sendTiktok(ctx)
+      const regexTiktok = /https:\/\/vm.tiktok.com\/[a-zA-Z1-9]+|https:\/\/www.tiktok.com\/@[a-zA-Z1-9_.]+\/video\/[0-9]+|https:\/\/www.tiktok.com\/@[a-zA-Z1-9_.]+\/photo\/[0-9]+/gm;
+      let tiktokUrls = ctx.message.text.match(regexTiktok)
+      if (tiktokUrls) {
+        this.sendTiktoks(ctx, tiktokUrls)
       }
     })
   }
